@@ -51,7 +51,7 @@ fi
 ./configure \
 	CFLAGS_NODIST="${MANYLINUX_CFLAGS} ${MANYLINUX_CPPFLAGS}" \
 	LDFLAGS_NODIST="${MANYLINUX_LDFLAGS}" \
-	--prefix=${PREFIX} --disable-shared --with-ensurepip=no > /dev/null
+	--prefix=${PREFIX} --enable-shared --without-static-libpython --with-ensurepip=no > /dev/null
 make > /dev/null
 make install > /dev/null
 if [ "${AUDITWHEEL_POLICY}" == "manylinux2010" ]; then
@@ -59,6 +59,9 @@ if [ "${AUDITWHEEL_POLICY}" == "manylinux2010" ]; then
 fi
 popd
 rm -rf Python-${CPYTHON_VERSION} Python-${CPYTHON_VERSION}.tgz Python-${CPYTHON_VERSION}.tgz.asc
+
+# we don't need libpython*.a, and they're many megabytes
+# find ${PREFIX} -name '*.a' -print0 | xargs -0 rm -f
 
 # We do not need precompiled .pyc and .pyo files.
 clean_pyc ${PREFIX}

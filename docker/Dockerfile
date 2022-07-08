@@ -74,6 +74,8 @@ COPY build_scripts/install-build-packages.sh /build_scripts/
 RUN manylinux-entrypoint /build_scripts/install-build-packages.sh
 
 
+ENV POLICY=$POLICY
+
 FROM build_base AS build_git
 COPY build_scripts/build-git.sh /build_scripts/
 RUN export GIT_ROOT=git-2.36.1 && \
@@ -109,19 +111,19 @@ RUN export OPENSSL_ROOT=openssl-1.1.1p && \
 COPY build_scripts/build-cpython.sh /build_scripts/
 
 
-FROM build_cpython AS build_cpython36
-COPY build_scripts/cpython-pubkeys.txt /build_scripts/cpython-pubkeys.txt
-RUN manylinux-entrypoint /build_scripts/build-cpython.sh 3.6.15
+# FROM build_cpython AS build_cpython36
+# COPY build_scripts/cpython-pubkeys.txt /build_scripts/cpython-pubkeys.txt
+# RUN manylinux-entrypoint /build_scripts/build-cpython.sh 3.6.15
 
 
-FROM build_cpython AS build_cpython37
-COPY build_scripts/cpython-pubkeys.txt /build_scripts/cpython-pubkeys.txt
-RUN manylinux-entrypoint /build_scripts/build-cpython.sh 3.7.13
+# FROM build_cpython AS build_cpython37
+# COPY build_scripts/cpython-pubkeys.txt /build_scripts/cpython-pubkeys.txt
+# RUN manylinux-entrypoint /build_scripts/build-cpython.sh 3.7.13
 
 
-FROM build_cpython AS build_cpython38
-COPY build_scripts/ambv-pubkey.txt /build_scripts/cpython-pubkeys.txt
-RUN manylinux-entrypoint /build_scripts/build-cpython.sh 3.8.13
+# FROM build_cpython AS build_cpython38
+# COPY build_scripts/ambv-pubkey.txt /build_scripts/cpython-pubkeys.txt
+# RUN manylinux-entrypoint /build_scripts/build-cpython.sh 3.8.13
 
 
 FROM build_cpython AS build_cpython39
@@ -129,28 +131,28 @@ COPY build_scripts/ambv-pubkey.txt /build_scripts/cpython-pubkeys.txt
 RUN manylinux-entrypoint /build_scripts/build-cpython.sh 3.9.13
 
 
-FROM build_cpython AS build_cpython310
-COPY build_scripts/cpython-pubkey-310-311.txt /build_scripts/cpython-pubkeys.txt
-RUN manylinux-entrypoint /build_scripts/build-cpython.sh 3.10.5
+# FROM build_cpython AS build_cpython310
+# COPY build_scripts/cpython-pubkey-310-311.txt /build_scripts/cpython-pubkeys.txt
+# RUN manylinux-entrypoint /build_scripts/build-cpython.sh 3.10.5
 
-FROM build_cpython AS build_cpython311
-COPY build_scripts/cpython-pubkey-310-311.txt /build_scripts/cpython-pubkeys.txt
-RUN manylinux-entrypoint /build_scripts/build-cpython.sh 3.11.0b3
+# FROM build_cpython AS build_cpython311
+# COPY build_scripts/cpython-pubkey-310-311.txt /build_scripts/cpython-pubkeys.txt
+# RUN manylinux-entrypoint /build_scripts/build-cpython.sh 3.11.0b3
 
-FROM build_cpython AS all_python
-COPY build_scripts/install-pypy.sh \
-     build_scripts/pypy.sha256 \
-     build_scripts/finalize-python.sh \
-     /build_scripts/
-RUN manylinux-entrypoint /build_scripts/install-pypy.sh 3.7 7.3.9
-RUN manylinux-entrypoint /build_scripts/install-pypy.sh 3.8 7.3.9
-RUN manylinux-entrypoint /build_scripts/install-pypy.sh 3.9 7.3.9
-COPY --from=build_cpython36 /opt/_internal /opt/_internal/
-COPY --from=build_cpython37 /opt/_internal /opt/_internal/
-COPY --from=build_cpython38 /opt/_internal /opt/_internal/
+# FROM build_cpython AS all_python
+# COPY build_scripts/install-pypy.sh \
+#      build_scripts/pypy.sha256 \
+#      build_scripts/finalize-python.sh \
+#      /build_scripts/
+# RUN manylinux-entrypoint /build_scripts/install-pypy.sh 3.7 7.3.9
+# RUN manylinux-entrypoint /build_scripts/install-pypy.sh 3.8 7.3.9
+# RUN manylinux-entrypoint /build_scripts/install-pypy.sh 3.9 7.3.9
+# COPY --from=build_cpython36 /opt/_internal /opt/_internal/
+# COPY --from=build_cpython37 /opt/_internal /opt/_internal/
+# COPY --from=build_cpython38 /opt/_internal /opt/_internal/
 COPY --from=build_cpython39 /opt/_internal /opt/_internal/
-COPY --from=build_cpython310 /opt/_internal /opt/_internal/
-COPY --from=build_cpython311 /opt/_internal /opt/_internal/
+# COPY --from=build_cpython310 /opt/_internal /opt/_internal/
+# COPY --from=build_cpython311 /opt/_internal /opt/_internal/
 RUN manylinux-entrypoint /build_scripts/finalize-python.sh
 
 
@@ -171,6 +173,8 @@ COPY build_scripts/finalize.sh \
      build_scripts/requirements-base-tools.txt \
      /build_scripts/
 COPY build_scripts/requirements-tools/* /build_scripts/requirements-tools/
+
+ENV POLICY=$POLICY
 RUN manylinux-entrypoint /build_scripts/finalize.sh && rm -rf /build_scripts
 
 ENV SSL_CERT_FILE=/opt/_internal/certs.pem

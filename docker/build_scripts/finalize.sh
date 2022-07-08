@@ -9,6 +9,19 @@ MY_DIR=$(dirname "${BASH_SOURCE[0]}")
 # Get build utilities
 source $MY_DIR/build_utils.sh
 
+mkdir /tmp/patchelf-binary
+pushd /tmp/patchelf-binary
+case ${AUDITWHEEL_ARCH} in
+	x86_64) curl -L -o patchelf.tar.gz https://github.com/NixOS/patchelf/releases/download/0.14.5/patchelf-0.14.5-x86_64.tar.gz ;;
+	i686) curl -L -o patchelf.tar.gz https://github.com/NixOS/patchelf/releases/download/0.14.5/patchelf-0.14.5-i686.tar.gz ;;
+	aarch64) curl -L patchelf.tar.gz https://github.com/NixOS/patchelf/releases/download/0.14.5/patchelf-0.14.5-aarch64.tar.gz ;;
+	*) echo "Skip installing patchelf for ${AUDITWHEEL_ARCH}" ;;
+esac
+tar zxvf patchelf.tar.gz || true
+mv bin/patchelf /usr/bin/patchelf || true
+popd
+rm -rf /tmp/patchelf-binary
+
 mkdir /opt/python
 for PREFIX in $(find /opt/_internal/ -mindepth 1 -maxdepth 1 \( -name 'cpython*' -o -name 'pypy*' \)); do
 	# Some python's install as bin/python3. Make them available as
@@ -16,6 +29,7 @@ for PREFIX in $(find /opt/_internal/ -mindepth 1 -maxdepth 1 \( -name 'cpython*'
 	if [ -e ${PREFIX}/bin/python3 ] && [ ! -e ${PREFIX}/bin/python ]; then
 		ln -s python3 ${PREFIX}/bin/python
 	fi
+	patchelf --add-rpath '$ORIGIN/../lib' ${PREFIX}/bin/python
 	${PREFIX}/bin/python -m ensurepip
 	if [ -e ${PREFIX}/bin/pip3 ] && [ ! -e ${PREFIX}/bin/pip ]; then
 		ln -s pip3 ${PREFIX}/bin/pip
