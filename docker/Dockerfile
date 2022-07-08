@@ -74,6 +74,8 @@ COPY build_scripts/install-build-packages.sh /build_scripts/
 RUN manylinux-entrypoint /build_scripts/install-build-packages.sh
 
 
+ENV POLICY=$POLICY
+
 FROM build_base AS build_git
 COPY build_scripts/build-git.sh /build_scripts/
 RUN export GIT_ROOT=git-2.38.2 && \
@@ -167,6 +169,8 @@ COPY build_scripts/finalize.sh \
      build_scripts/requirements-base-tools.txt \
      /build_scripts/
 COPY build_scripts/requirements-tools/* /build_scripts/requirements-tools/
+
+ENV POLICY=$POLICY
 RUN manylinux-entrypoint /build_scripts/finalize.sh && rm -rf /build_scripts
 
 ENV SSL_CERT_FILE=/opt/_internal/certs.pem
