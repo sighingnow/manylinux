@@ -14,7 +14,7 @@ pushd /tmp/patchelf-binary
 case ${AUDITWHEEL_ARCH} in
 	x86_64) curl -L -o patchelf.tar.gz https://github.com/NixOS/patchelf/releases/download/0.14.5/patchelf-0.14.5-x86_64.tar.gz ;;
 	i686) curl -L -o patchelf.tar.gz https://github.com/NixOS/patchelf/releases/download/0.14.5/patchelf-0.14.5-i686.tar.gz ;;
-	aarch64) curl -L patchelf.tar.gz https://github.com/NixOS/patchelf/releases/download/0.14.5/patchelf-0.14.5-aarch64.tar.gz ;;
+	aarch64) curl -L -o patchelf.tar.gz https://github.com/NixOS/patchelf/releases/download/0.14.5/patchelf-0.14.5-aarch64.tar.gz ;;
 	*) echo "Skip installing patchelf for ${AUDITWHEEL_ARCH}" ;;
 esac
 tar zxvf patchelf.tar.gz || true
