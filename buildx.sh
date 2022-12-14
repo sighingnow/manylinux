@@ -1,5 +1,7 @@
+# Build image for multiple platforms and push to registry in the same time
+
 export POLICY=manylinux2014
-#export PLATFORM=aarch64
+# export PLATFORM=aarch64
 export BASEIMAGE=centos:7
 export DEVTOOLSET_ROOTPATH=/opt/rh/devtoolset-10/root
 export PREPEND_PATH=/opt/rh/devtoolset-10/root/usr/bin:

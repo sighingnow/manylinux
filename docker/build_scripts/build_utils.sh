@@ -33,7 +33,10 @@ function fetch_source {
     if [ -f ${file} ]; then
         echo "${file} exists, skipping fetch"
     else
-        curl -fsSL -o ${file} ${url}/${file}
+        # Use sock5s proxy to download files incase download fails in normal cases
+        # `host.docker.internal` is the localhost of host machine from a container's perspective.
+        # See https://docs.docker.com/desktop/networking/#i-want-to-connect-from-a-container-to-a-service-on-the-host
+        curl -fsSL -o ${file} ${url}/${file} || curl -x socks5h://host.docker.internal:13659 -fsSL -o ${file} ${url}/${file}
     fi
 }
 
