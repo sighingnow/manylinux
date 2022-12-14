@@ -1,18 +1,30 @@
 # default to latest supported policy, x86_64
 ARG BASEIMAGE=amd64/debian:9
 ARG POLICY=manylinux_2_24
-ARG PLATFORM=$TARGETPLATFORM
+ARG PLATFORM=x86_64
 ARG DEVTOOLSET_ROOTPATH=
 ARG LD_LIBRARY_PATH_ARG=
 ARG PREPEND_PATH=
 
 FROM $BASEIMAGE AS runtime_base
 ARG POLICY
-ARG PLATFORM=$TARGETPLATFORM
+ARG PLATFORM
 ARG DEVTOOLSET_ROOTPATH
 ARG LD_LIBRARY_PATH_ARG
 ARG PREPEND_PATH
 LABEL maintainer="The ManyLinux project"
+
+# refer from https://github.com/BretFisher/multi-platform-docker-build
+ARG TARGETPLATFORM
+RUN case ${TARGETPLATFORM} in \
+         "linux/amd64")   PLATFORM=x86_64   ;; \
+         "linux/arm64")   PLATFORM=aarch64  ;; \
+         "linux/arm/v7")  PLATFORM=armv7l   ;; \
+         "linux/arm/v6")  PLATFORM=armv7l   ;; \
+         "linux/386")     PLATFORM=i686     ;; \
+         "linux/ppc64le") PLATFORM=ppc64le  ;; \
+         "inux/s390x")    PLATFORM=s390x    ;; \
+    esac
 
 ENV AUDITWHEEL_POLICY=${POLICY} AUDITWHEEL_ARCH=${PLATFORM} AUDITWHEEL_PLAT=${POLICY}_${PLATFORM}
 ENV LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8 LANGUAGE=en_US.UTF-8
