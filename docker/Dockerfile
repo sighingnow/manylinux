@@ -125,9 +125,9 @@ COPY build_scripts/build-cpython.sh /build_scripts/
 #RUN manylinux-entrypoint /build_scripts/build-cpython.sh 3.6.15
 
 
-#FROM build_cpython AS build_cpython37
-#COPY build_scripts/cpython-pubkeys.txt /build_scripts/cpython-pubkeys.txt
-#RUN manylinux-entrypoint /build_scripts/build-cpython.sh 3.7.16
+FROM build_cpython AS build_cpython37
+COPY build_scripts/cpython-pubkeys.txt /build_scripts/cpython-pubkeys.txt
+RUN manylinux-entrypoint /build_scripts/build-cpython.sh 3.7.16
 
 
 FROM build_cpython AS build_cpython38
@@ -157,7 +157,7 @@ COPY build_scripts/install-pypy.sh \
 #RUN manylinux-entrypoint /build_scripts/install-pypy.sh 3.8 7.3.10
 #RUN manylinux-entrypoint /build_scripts/install-pypy.sh 3.9 7.3.10
 #COPY --from=build_cpython36 /opt/_internal /opt/_internal/
-#COPY --from=build_cpython37 /opt/_internal /opt/_internal/
+COPY --from=build_cpython37 /opt/_internal /opt/_internal/
 COPY --from=build_cpython38 /opt/_internal /opt/_internal/
 COPY --from=build_cpython39 /opt/_internal /opt/_internal/
 COPY --from=build_cpython310 /opt/_internal /opt/_internal/
@@ -173,7 +173,7 @@ COPY build_scripts/finalize.sh \
      build_scripts/update-system-packages.sh \
      build_scripts/python-tag-abi-tag.py \
 #     build_scripts/requirements3.6.txt \
-#     build_scripts/requirements3.7.txt \
+     build_scripts/requirements3.7.txt \
      build_scripts/requirements3.8.txt \
      build_scripts/requirements3.9.txt \
      build_scripts/requirements3.10.txt \
